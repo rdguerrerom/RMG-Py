@@ -427,6 +427,16 @@ cdef class SurfaceArrhenius(Arrhenius):
     `comment`               Information about the model (e.g. its source)
     ======================= =============================================================
     """
+    def __init__(self, A=None, n=0.0, Ea=None, T0=(1.0, "K"), Tmin=None, Tmax=None, Pmin=None, Pmax=None,
+                 coverage_dependence=None, uncertainty=None, comment=''):
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, uncertainty=uncertainty,
+                               comment=comment)
+        self.A = A
+        self.n = n
+        self.Ea = Ea
+        self.T0 = T0
+        self.coverage_dependence = coverage_dependence
+
     property A:
         """The preexponential factor. 
     
@@ -463,7 +473,7 @@ cdef class SurfaceArrhenius(Arrhenius):
         A helper function used when pickling a SurfaceArrhenius object.
         """
         return (SurfaceArrhenius, (self.A, self.n, self.Ea, self.T0, self.Tmin, self.Tmax, self.Pmin, self.Pmax,
-                                   self.uncertainty, self.comment))
+                                   self.coverage_dependence, self.uncertainty, self.comment))
 
 ################################################################################
 
@@ -475,6 +485,7 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
     It is very similar to the gas-phase :class:`ArrheniusEP`.
     The only differences being the A factor has different units,
     (and the catalysis community prefers to call it BEP rather than EP!)
+    and has a coverage_dependence parameter for coverage dependence
     
     The attributes are:
 
@@ -497,6 +508,16 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
     ======================= =============================================================
     
     """
+    def __init__(self, A=None, n=0.0, alpha=0.0, E0=None, Tmin=None, Tmax=None, Pmin=None, Pmax=None, uncertainty=None,
+                 coverage_dependence=None, comment=''):
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, uncertainty=uncertainty,
+                               comment=comment,)
+        self.A = A
+        self.n = n
+        self.alpha = alpha
+        self.E0 = E0
+        self.coverage_dependence = coverage_dependence
+
     property A:
         """The preexponential factor. 
     
@@ -534,7 +555,7 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
         A helper function used when pickling an SurfaceArrheniusBEP object.
         """
         return (SurfaceArrheniusBEP, (self.A, self.n, self.alpha, self.E0, self.Tmin, self.Tmax, self.Pmin, self.Pmax,
-                                      self.uncertainty, self.comment))
+                                      self.coverage_dependence, self.uncertainty, self.comment))
 
     cpdef SurfaceArrhenius to_arrhenius(self, double dHrxn):
         """
