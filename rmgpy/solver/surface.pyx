@@ -426,7 +426,7 @@ cdef class SurfaceReactor(ReactionSystem):
                         theta = current_surface_coverages[smiles]
                         if theta >= 0.1:
                             k *= 10. ** (parameters['a'] * theta) * theta ** parameters['m'] * np.exp(-1 * \
-                                    parameters['E'] * theta / (constants.R * self.T.value_si))
+                                    parameters['E'].value_si * theta / (constants.R * self.T.value_si))
             if ir[j, 0] >= num_core_species or ir[j, 1] >= num_core_species or ir[j, 2] >= num_core_species:
                 reaction_rate = 0.0
             elif ir[j, 1] == -1:  # only one reactant
@@ -443,7 +443,7 @@ cdef class SurfaceReactor(ReactionSystem):
                         theta = current_surface_coverages[smiles]
                         if theta >= 0.1:
                             k *= 10. ** (parameters['a'] * theta) * theta ** parameters['m'] * np.exp(-1 * \
-                                    parameters['E'] * theta / (constants.R * self.T.value_si))
+                                    parameters['E'].value_si * theta / (constants.R * self.T.value_si))
             if ip[j, 0] >= num_core_species or ip[j, 1] >= num_core_species or ip[j, 2] >= num_core_species:
                 pass
             elif ip[j, 1] == -1:  # only one reactant
