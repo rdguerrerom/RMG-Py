@@ -47,6 +47,7 @@ from rmgpy.kinetics import Arrhenius, ThirdBody, Lindemann, Troe, \
 from rmgpy.molecule import Molecule
 from rmgpy.reaction import Reaction
 from rmgpy.species import Species
+from rmgpy.kinetics.surface import SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP
 
 
 ################################################################################
@@ -434,6 +435,15 @@ class KineticsLibrary(Database):
             # Create a new reaction per entry
             rxn = entry.item
             rxn_string = entry.label
+
+            # Convert coverage dependence label to species label
+            if isinstance(entry.data, (SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP)):
+                if entry.data.coverage_dependence:
+                    coverage_dependence_update = {}
+                    for key, value in entry.data.coverage_dependence.items():
+                        coverage_dependence_update[species_dict[key]] = value
+                    entry.data.coverage_dependence = coverage_dependence_update
+
             # Convert the reactants and products to Species objects using the species_dict
             reactants, products = rxn_string.split('=>')
             reversible = True

@@ -924,6 +924,7 @@ class KineticsFamily(Database):
 
         # Add new reactions to training depository
         for i, reaction in enumerate(reactions):
+
             index = max_index + i + 1
             entry = Entry(
                 index=index,

@@ -48,6 +48,7 @@ from rmgpy.data.rmg import get_db
 from rmgpy.display import display
 from rmgpy.exceptions import ForbiddenStructureException
 from rmgpy.kinetics import KineticsData, Arrhenius
+from rmgpy.kinetics.surface import SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP
 from rmgpy.quantity import Quantity
 from rmgpy.reaction import Reaction
 from rmgpy.rmg.pdep import PDepReaction, PDepNetwork
@@ -857,6 +858,12 @@ class CoreEdgeReactionModel:
                 # We're done with the "reverse" attribute, so delete it to save a bit of memory
                 reaction.reverse = None
         reaction.kinetics = kinetics
+
+        if isinstance(kinetics, (SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP)):
+            if kinetics.coverage_dependence:
+                for species, values in kinetics.coverage_dependence.items():
+                    species_in_model = self.make_new_species(species)
+                    kinetics.coverage_dependence[species_in_model] = values
 
     def generate_kinetics(self, reaction):
         """
