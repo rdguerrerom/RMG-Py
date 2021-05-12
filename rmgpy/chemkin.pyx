@@ -207,6 +207,7 @@ def read_kinetics_entry(entry, species_dict, Aunits, Eunits):
         kinetics.update({
             'chebyshev coefficients': [],
             'efficiencies': {},
+            'coverage dependence': {}
         })
 
         # Note that the subsequent lines could be in any order
@@ -288,6 +289,8 @@ def read_kinetics_entry(entry, species_dict, Aunits, Eunits):
             reaction.kinetics = kinetics['arrhenius high']
         elif 'sticking coefficient' in kinetics:
             reaction.kinetics = kinetics['sticking coefficient']
+        elif 'surface arrhenius' in kinetics:
+            reaction.kinetics = kinetics['surface arrhenius']
         else:
             raise ChemkinError(
                 'Unable to understand all additional information lines for reaction {0}.'.format(entry))
@@ -449,6 +452,25 @@ def _read_kinetics_line(line, reaction, species_dict, Eunits, kunits, klow_units
         # Duplicate reaction
         reaction.duplicate = True
 
+    elif 'COV' in line:
+        k = kinetics['arrhenius high']
+        kinetics['surface arrhenius'] = _kinetics.SurfaceArrhenius(
+            A=(k.A.value, kunits),
+            n=k.n,
+            Ea=k.Ea,
+            T0=k.T0,
+        )
+        del kinetics['arrhenius high']
+
+        tokens = tokens[1].split()
+        kinetics['coverage dependence'][species_dict[tokens[0].strip()]] = {'E': (tokens[1].strip(), Eunits), 'm': tokens[2].strip(), 'a':tokens[3].strip()}
+        try:
+            # is a sticking coefficient
+            kinetics['sticking coefficient'][species_dict[tokens[0].strip()]] = {'E': (tokens[1].strip(), Eunits), 'm': tokens[2].strip(), 'a':tokens[3].strip()}
+        except KeyError:
+            # is a not a sticking coefficient
+            kinetics['surface arrhenius'].coverage_dependence[species_dict[tokens[0].strip()]] = {'E': (tokens[1].strip(), 'J/mol'), 'm': tokens[2].strip(), 'a':tokens[3].strip()}
+
     elif 'LOW' in line:
         # Low-pressure-limit Arrhenius parameters
         tokens = tokens[1].split()
@@ -549,6 +571,7 @@ def _read_kinetics_line(line, reaction, species_dict, Eunits, kunits, klow_units
             reaction.reversible = False
         else:
             logging.info("Ignoring explicit reverse rate for reaction {0}".format(reaction))
+
     elif line.strip() == 'STICK':
         # Convert what we thought was Arrhenius into StickingCoefficient
         k = kinetics['arrhenius high']
@@ -559,6 +582,7 @@ def _read_kinetics_line(line, reaction, species_dict, Eunits, kunits, klow_units
             T0=k.T0,
         )
         del kinetics['arrhenius high']
+
     else:
         # Assume a list of collider efficiencies
         try:
@@ -1781,8 +1805,8 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
         string += '\n    STICK'
         if kinetics.coverage_dependence is not None:
             for species, cov_params in kinetics.coverage_dependence.items():
-                string += '{0!s:<51} '.format('\n    COV / {species}')
-                string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
+                string += f'\n    COV / {species.label:<41}'
+                string += f"{cov_params['E'].value_si:<9.3e} {cov_params['m'].value:<6.3f} {cov_params['a'].value:<6.3f} /"
     elif isinstance(kinetics, _kinetics.Arrhenius):
         conversion_factor = kinetics.A.get_conversion_factor_from_si_to_cm_mol_s()
         if not isinstance(kinetics, _kinetics.SurfaceArrhenius):
@@ -1801,8 +1825,8 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
         )
         if isinstance(kinetics, _kinetics.SurfaceArrhenius) and kinetics.coverage_dependence:
             for species, cov_params in kinetics.coverage_dependence.items():
-                string += '{0!s:<51} '.format('\n    COV / {species}')
-                string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
+                string += f'\n    COV / {species.label:<41}'
+                string += f"{cov_params['E'].value_si:<9.3e} {cov_params['m'].value:<6.3f} {cov_params['a'].value:<6.3f} /"
     elif isinstance(kinetics, (_kinetics.Lindemann, _kinetics.Troe)):
         arrhenius = kinetics.arrheniusHigh
         conversion_factor = arrhenius.A.get_conversion_factor_from_si_to_cm_mol_s()
@@ -2069,7 +2093,7 @@ def save_transport_file(path, species):
                 ))
 
 
-def save_chemkin_file(path, species, reactions, verbose=True, check_for_duplicates=True):
+def save_chemkin_file(path, species, reactions, verbose=True, check_for_duplicates=True, coverage_dependence=False):
     """
     Save a Chemkin input file to `path` on disk containing the provided lists
     of `species` and `reactions`.
@@ -2117,7 +2141,7 @@ def save_chemkin_file(path, species, reactions, verbose=True, check_for_duplicat
     global _chemkin_reaction_count
     _chemkin_reaction_count = 0
     for rxn in reactions:
-        f.write(write_kinetics_entry(rxn, species_list=species, verbose=verbose))
+        f.write(write_kinetics_entry(rxn, species_list=species, verbose=verbose, coverage_dependence=coverage_dependence))
         # Don't forget to mark duplicates!
         f.write('\n')
     f.write('END\n\n')
