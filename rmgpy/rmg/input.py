@@ -99,12 +99,14 @@ def database(
 
 def catalyst_properties(bindingEnergies=None,
                         surfaceSiteDensity=None,
-                        metal=None):
+                        metal=None,
+                        coverageDependence=False):
     """
     Specify the properties of the catalyst.
     Binding energies of C,H,O,N atoms, and the surface site density.
     Metal is the label of a metal in the surface metal library.
     Defaults to Pt(111) if not specified.
+    coverageDependence defaults to False if not specified.
     """
     # Normally we wouldn't load the database until after reading the input file,
     # but we need to load the metal surfaces library to validate the input.
@@ -139,6 +141,12 @@ def catalyst_properties(bindingEnergies=None,
 
     logging.info("Using binding energies:\n%r", rmg.binding_energies)
     logging.info("Using surface site density: %r", rmg.surface_site_density)
+
+    if coverageDependence is True:
+        logging.info("Coverage dependence is turned ON")
+    else:
+        logging.info("Coverage dependence is turned OFF")
+    rmg.coverage_dependence = coverageDependence
 
 
 def convert_binding_energies(binding_energies):
@@ -509,7 +517,8 @@ def surface_reactor(temperature,
                             termination=termination,
                             sensitive_species=sensitive_species,
                             sensitivity_threshold=sensitivityThreshold,
-                            sens_conditions=sens_conditions)
+                            sens_conditions=sens_conditions,
+                            coverage_dependence=rmg.coverage_dependence)
     rmg.reaction_systems.append(system)
     system.log_initial_conditions(number=len(rmg.reaction_systems))
 

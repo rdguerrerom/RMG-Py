@@ -185,6 +185,7 @@ class RMG(util.Subject):
         self.diffusion_limiter = None
         self.surface_site_density = None
         self.binding_energies = None
+        self.coverage_dependence = False
 
         self.reaction_model = None
         self.reaction_systems = None
@@ -263,6 +264,8 @@ class RMG(util.Subject):
 
         if self.surface_site_density:
             self.reaction_model.surface_site_density = self.surface_site_density
+
+        self.reaction_model.coverage_dependence = self.coverage_dependence
 
         self.reaction_model.verbose_comments = self.verbose_comments
         self.reaction_model.save_edge_species = self.save_edge_species
@@ -403,6 +406,8 @@ class RMG(util.Subject):
         # set global binding energies variable
         if self.binding_energies:
             self.database.thermo.set_binding_energies(self.binding_energies)
+
+
 
         # set global variable solvent
         if self.solvent:
