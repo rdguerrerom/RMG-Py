@@ -607,7 +607,7 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
         A helper function used when pickling an SurfaceArrheniusBEP object.
         """
         return (SurfaceArrheniusBEP, (self.A, self.n, self.alpha, self.E0, self.Tmin, self.Tmax, self.Pmin, self.Pmax,
-                                      self.coverage_dependence, self.uncertainty, self.comment))
+                                      self.uncertainty, self.coverage_dependence, self.comment))
 
     cpdef SurfaceArrhenius to_arrhenius(self, double dHrxn):
         """
