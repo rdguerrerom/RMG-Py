@@ -134,15 +134,13 @@ cdef class StickingCoefficient(KineticsModel):
         def __get__(self):
             return self._coverage_dependence
         def __set__(self, value):
-            self._coverage_dependence = {}
-            if value:
-                for species, parameters in value.items():
-                    for variable, x in parameters.items():
-                        if variable is 'E':
-                            parameters[variable] = quantity.Energy(x)
-                        else:
-                            parameters[variable] = quantity.Dimensionless(x)
-                    self._coverage_dependence[species] = parameters
+             self._coverage_dependence = {}
+             if value:
+                 for species, parameters in value.items():
+                     processed_parameters = {'E': quantity.Energy(parameters['E']),
+                                             'm': quantity.Dimensionless(parameters['m']),
+                                             'a': quantity.Dimensionless(parameters['a'])}
+                     self._coverage_dependence[species] = processed_parameters
 
     cpdef double get_sticking_coefficient(self, double T) except -1:
         """
@@ -341,15 +339,13 @@ cdef class StickingCoefficientBEP(KineticsModel):
         def __get__(self):
             return self._coverage_dependence
         def __set__(self, value):
-            self._coverage_dependence = {}
-            if value:
-                for species, parameters in value.items():
-                    for variable, x in parameters.items():
-                        if variable is 'E':
-                            parameters[variable] = quantity.Energy(x)
-                        else:
-                            parameters[variable] = quantity.Dimensionless(x)
-                    self._coverage_dependence[species] = parameters
+             self._coverage_dependence = {}
+             if value:
+                 for species, parameters in value.items():
+                     processed_parameters = {'E': quantity.Energy(parameters['E']),
+                                             'm': quantity.Dimensionless(parameters['m']),
+                                             'a': quantity.Dimensionless(parameters['a'])}
+                     self._coverage_dependence[species] = processed_parameters
 
     cpdef double get_sticking_coefficient(self, double T, double dHrxn=0.0) except -1:
         """
@@ -477,15 +473,13 @@ cdef class SurfaceArrhenius(Arrhenius):
         def __get__(self):
             return self._coverage_dependence
         def __set__(self, value):
-            self._coverage_dependence = {}
-            if value:
-                for species, parameters in value.items():
-                    for variable, x in parameters.items():
-                        if variable is 'E':
-                            parameters[variable] = quantity.Energy(x)
-                        else:
-                            parameters[variable] = quantity.Dimensionless(x)
-                    self._coverage_dependence[species] = parameters
+             self._coverage_dependence = {}
+             if value:
+                 for species, parameters in value.items():
+                     processed_parameters = {'E': quantity.Energy(parameters['E']),
+                                             'm': quantity.Dimensionless(parameters['m']),
+                                             'a': quantity.Dimensionless(parameters['a'])}
+                     self._coverage_dependence[species] = processed_parameters
 
     def __repr__(self):
         """
@@ -571,15 +565,13 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
         def __get__(self):
             return self._coverage_dependence
         def __set__(self, value):
-            self._coverage_dependence = {}
-            if value:
-                for species, parameters in value.items():
-                    for variable, x in parameters.items():
-                        if variable is 'E':
-                            parameters[variable] = quantity.Energy(x)
-                        else:
-                            parameters[variable] = quantity.Dimensionless(x)
-                    self._coverage_dependence[species] = parameters
+             self._coverage_dependence = {}
+             if value:
+                 for species, parameters in value.items():
+                     processed_parameters = {'E': quantity.Energy(parameters['E']),
+                                             'm': quantity.Dimensionless(parameters['m']),
+                                             'a': quantity.Dimensionless(parameters['a'])}
+                     self._coverage_dependence[species] = processed_parameters
 
     def __repr__(self):
         """
