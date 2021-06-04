@@ -437,7 +437,7 @@ class KineticsLibrary(Database):
             rxn_string = entry.label
 
             # Convert coverage dependence label to species label
-            if isinstance(entry.data, (SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP)):
+            if hasattr(entry.data, 'coverage_dependence'):
                 if entry.data.coverage_dependence:
                     coverage_dependence_update = {}
                     for key, value in entry.data.coverage_dependence.items():
