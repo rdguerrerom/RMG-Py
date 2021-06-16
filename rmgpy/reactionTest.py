@@ -141,7 +141,7 @@ class TestSurfaceReaction(unittest.TestCase):
         m_x = Molecule().from_adjacency_list("1 X u0 p0")
         m_hx = Molecule().from_adjacency_list("1 H u0 p0 {2,S} \n 2 X u0 p0 {1,S}")
         m_ch3 = Molecule().from_smiles("[CH3]")
-        m_ch3x = Molecule().from_adjacency_list("1 H u0 p0 {2,S} \n 2 X u0 p0 {1,S}")
+        m_ch3x = Molecule().from_smiles("[CH3]*")
 
         s_h2 = Species(
             molecule=[m_h2],
