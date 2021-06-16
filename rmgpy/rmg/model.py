@@ -35,6 +35,7 @@ import gc
 import itertools
 import logging
 import os
+import re
 
 import numpy as np
 
@@ -223,6 +224,7 @@ class CoreEdgeReactionModel:
         self.new_surface_rxns_loss = set()
         self.solvent_name = ''
         self.surface_site_density = None
+        self.metal = None # (str with metal and facet, i.e Pt111)
 
     def check_for_existing_species(self, molecule):
         """
@@ -867,11 +869,20 @@ class CoreEdgeReactionModel:
 
         family = get_family_library_object(reaction.family)
 
+        metal = self.metal
+        facet = None
+        if metal:
+            facet = re.search('\d+', metal)
+            if facet:
+                metal = metal[:facet.span()[0]]
+                facet = facet.group(0)
+
         # Get the kinetics for the reaction
         kinetics, source, entry, is_forward = family.get_kinetics(reaction, template_labels=reaction.template,
                                                                   degeneracy=reaction.degeneracy,
                                                                   estimator=self.kinetics_estimator,
-                                                                  return_all_kinetics=False)
+                                                                  return_all_kinetics=False, 
+                                                                  metal=metal, facet=facet)
         # Get the gibbs free energy of reaction at 298 K
         G298 = reaction.get_free_energy_of_reaction(298)
         gibbs_is_positive = G298 > -1e-8
@@ -885,7 +896,8 @@ class CoreEdgeReactionModel:
                                                                                           template_labels=reaction.reverse.template,
                                                                                           degeneracy=reaction.reverse.degeneracy,
                                                                                           estimator=self.kinetics_estimator,
-                                                                                          return_all_kinetics=False)
+                                                                                          return_all_kinetics=False,
+                                                                                          metal=metal, facet=facet)
                 # Now decide which direction's kinetics to keep
                 keep_reverse = False
                 if entry is not None and rev_entry is None:
