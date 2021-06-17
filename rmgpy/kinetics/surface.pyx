@@ -59,7 +59,7 @@ cdef class StickingCoefficient(KineticsModel):
     `Pmin`                  The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`                  The maximum pressure at which the model is valid, or zero if unknown or undefined
     `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species with:
-                             `E`, a dictionary of the activation energy dependence on coverage,
+                             `E`, the activation energy dependence on coverage,
                              `m`, the power-law exponent of coverage dependence, and
                              `a`, the coefficient for exponential dependence on the coverage
     `comment`               Information about the model (e.g. its source)
@@ -263,9 +263,10 @@ cdef class StickingCoefficientBEP(KineticsModel):
     `Tmax`                  The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`                  The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`                  The maximum pressure at which the model is valid, or zero if unknown or undefined
-    `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species, with a
-                            dictionary of the activation energy dependence on coverage, the power-law exponent of
-                            coverage dependence and the coefficient for exponential dependence on the coverage
+    `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species with:
+                             `E`, the activation energy dependence on coverage,
+                             `m`, the power-law exponent of coverage dependence, and
+                             `a`, the coefficient for exponential dependence on the coverage
     `comment`               Information about the model (e.g. its source)
     ======================= =============================================================
     
@@ -444,7 +445,7 @@ cdef class SurfaceArrhenius(Arrhenius):
     `Pmin`                  The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`                  The maximum pressure at which the model is valid, or zero if unknown or undefined
     `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species with:
-                             `E`, a dictionary of the activation energy dependence on coverage,
+                             `E`, the activation energy dependence on coverage,
                              `m`, the power-law exponent of coverage dependence, and
                              `a`, the coefficient for exponential dependence on the coverage
     `uncertainty`           Uncertainty information
@@ -535,9 +536,10 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
     `Tmax`                  The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`                  The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`                  The maximum pressure at which the model is valid, or zero if unknown or undefined
-    `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species, with a
-                            dictionary of the activation energy dependence on coverage, the power-law exponent of
-                            coverage dependence, and the coefficient for exponential dependence on the coverage
+    `coverage_dependence`   A dictionary of coverage dependent parameters to a certain surface species with:
+                             `E`, the activation energy dependence on coverage,
+                             `m`, the power-law exponent of coverage dependence, and
+                             `a`, the coefficient for exponential dependence on the coverage
     `uncertainty`           Uncertainty information
     `comment`               Information about the model (e.g. its source)
     ======================= =============================================================
